@@ -22,12 +22,22 @@ class MainActivity : AppCompatActivity() {
 
             intentMessage.doAfterTextChanged {
                 toInflated.isEnabled = hasMessage()
+                toDynamic.isEnabled = hasMessage()
             }
             toInflated.isEnabled = hasMessage()
+            toDynamic.isEnabled = hasMessage()
 
             toInflated.setOnClickListener {
                 startActivity(
                     InflatedActivity.getIntent(
+                        this@MainActivity,
+                        intentMessage.text.toString()
+                    )
+                )
+            }
+            toDynamic.setOnClickListener {
+                startActivity(
+                    DynamicActivity.getIntent(
                         this@MainActivity,
                         intentMessage.text.toString()
                     )
