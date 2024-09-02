@@ -66,6 +66,11 @@ class MainActivity : AppCompatActivity() {
                     ServiceActivity.getIntent(this@MainActivity)
                 )
             }
+            toState.setOnClickListener {
+                startActivity(
+                    StateActivity.getIntent(this@MainActivity)
+                )
+            }
         }
     }
 }
