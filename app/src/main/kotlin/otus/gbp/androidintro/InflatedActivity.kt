@@ -32,6 +32,7 @@ class InflatedActivity : AppCompatActivity() {
 
         with(binding) {
             intentText.text = intent.message
+            appText.text = withApp { data.message }
         }
     }
 }

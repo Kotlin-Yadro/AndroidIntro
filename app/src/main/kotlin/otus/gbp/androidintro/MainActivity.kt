@@ -4,10 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doAfterTextChanged
 import otus.gbp.androidintro.databinding.ActivityMainBinding
 
@@ -21,6 +18,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         with(binding) {
+
+            appMessage.setText(withApp { data.message })
+            setAppMessage.setOnClickListener {
+                withApp {
+                    data = data.copy(message = appMessage.text.toString())
+                }
+            }
+
             fun hasMessage(): Boolean = true == intentMessage.text?.toString()?.isNotBlank()
 
             intentMessage.doAfterTextChanged {
