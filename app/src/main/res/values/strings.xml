@@ -2,5 +2,6 @@
     <string name="app_name">AndroidIntro</string>
     <string name="btn_inflated_activity">Inflated activity</string>
     <string name="btn_dynamic_activity">Dynamic activity</string>
+    <string name="btn_mail">Mail</string>
     <string name="hint_intent_message">Intent message</string>
 </resources>

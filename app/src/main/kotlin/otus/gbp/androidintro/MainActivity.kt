@@ -1,5 +1,8 @@
 package otus.gbp.androidintro
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -42,6 +45,16 @@ class MainActivity : AppCompatActivity() {
                         intentMessage.text.toString()
                     )
                 )
+            }
+            toMail.setOnClickListener {
+                val mailIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_EMAIL, arrayOf("jan@example.com"))
+                    putExtra(Intent.EXTRA_SUBJECT, "Email subject")
+                    putExtra(Intent.EXTRA_TEXT, "Email message text")
+                }
+
+                startActivity(mailIntent)
             }
         }
     }
