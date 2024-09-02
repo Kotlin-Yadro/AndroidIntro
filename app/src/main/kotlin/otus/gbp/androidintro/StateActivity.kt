@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Job
@@ -18,42 +19,24 @@ class StateActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityStateBinding
-    private var count = 0
-    private var countJob: Job? = null
+    private val model: StateActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityStateBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        displayCount()
         with(binding) {
             startTimer.setOnClickListener {
-                launchTimer()
+                model.launchTimer()
             }
             stopTimer.setOnClickListener {
-                stopTimer()
+                model.stopTimer()
             }
-        }
-    }
-
-    private fun displayCount() = with(binding) {
-        timerValue.text = getString(R.string.timer_value, count)
-    }
-
-    private fun launchTimer() {
-        countJob = lifecycleScope.launch {
-            while (isActive) {
-                displayCount()
-                delay(1000)
-                ++count
+            lifecycleScope.launch {
+                model.countState.collect {
+                    timerValue.text = getString(R.string.timer_value, it)
+                }
             }
-        }
-    }
-
-    private fun stopTimer() {
-        countJob?.let {
-            it.cancel()
-            countJob = null
         }
     }
 }
