@@ -61,6 +61,11 @@ class MainActivity : AppCompatActivity() {
 
                 startActivity(mailIntent)
             }
+            toService.setOnClickListener {
+                startActivity(
+                    ServiceActivity.getIntent(this@MainActivity)
+                )
+            }
         }
     }
 }

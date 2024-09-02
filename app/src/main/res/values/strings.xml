@@ -4,5 +4,10 @@
     <string name="btn_inflated_activity">Inflated activity</string>
     <string name="btn_dynamic_activity">Dynamic activity</string>
     <string name="btn_mail">Mail</string>
+    <string name="btn_service_activity">Service activity</string>
     <string name="hint_intent_message">Intent message</string>
+    <string name="btn_listen">Listen</string>
+    <string name="btn_enough">Enough</string>
+    <string name="btn_start_service">Start service</string>
+    <string name="btn_stop_service">Stop service</string>
 </resources>
