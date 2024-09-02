@@ -16,6 +16,7 @@ import androidx.core.app.ServiceCompat
 import androidx.core.os.bundleOf
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -38,6 +39,10 @@ class PlayerService : LifecycleService() {
         messenger = Messenger(IncomingHandler(WeakReference(this)))
         startForeground()
         startPlayback()
+        // Notify service started
+        LocalBroadcastManager
+            .getInstance(this)
+            .sendBroadcastSync(Intent(SERVICE_STARTED));
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -129,6 +134,7 @@ class PlayerService : LifecycleService() {
         const val MSG_UNREGISTER = 2
         const val MSG_TEXT = 3
         const val KEY_TEXT = "text"
+        const val SERVICE_STARTED = "serviceStarted"
 
         private val lyrics = listOf(
             "Baby shark, doo doo doo doo doo doo",

@@ -3,9 +3,11 @@ package otus.gbp.androidintro
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.app.ActivityManager
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.os.Build
@@ -19,6 +21,7 @@ import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import otus.gbp.androidintro.databinding.ActivityServiceBinding
 import java.lang.ref.WeakReference
 
@@ -38,6 +41,8 @@ class ServiceActivity : AppCompatActivity() {
     private val incomingMessenger = Messenger(IncomingHandler(WeakReference(this)))
     // Flag indicating whether we have called bind on the service
     private var bound: Boolean = false
+    // Listens to service start
+    private var startReceiver: BroadcastReceiver? = null
 
     // Service connection for binding to the service
     private val connection = object : ServiceConnection {
@@ -88,12 +93,50 @@ class ServiceActivity : AppCompatActivity() {
                 }
             }
 
+            updateServiceButtons()
             startService.setOnClickListener {
                 checkNotificationPermission()
             }
             stopService.setOnClickListener {
                 stopService()
+                updateServiceButtons()
             }
+        }
+    }
+
+    private fun updateServiceButtons() = with(binding) {
+        if (isMyServiceRunning(PlayerService::class.java)) {
+            startService.isEnabled = false
+            stopService.isEnabled = true
+        } else {
+            startService.isEnabled = true
+            stopService.isEnabled = false
+        }
+    }
+
+    private fun isMyServiceRunning(serviceClass: Class<out Service>) = try {
+        (getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager)
+            .getRunningServices(Int.MAX_VALUE)
+            .any { it.service.className == serviceClass.name }
+    } catch (e: Exception) {
+        false
+    }
+
+    private fun listenForServiceStart() {
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                updateServiceButtons()
+                stopListenForServiceStart()
+            }
+        }
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, IntentFilter(PlayerService.SERVICE_STARTED))
+        startReceiver = receiver
+    }
+
+    private fun stopListenForServiceStart() {
+        startReceiver?.let {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(it)
+            startReceiver = null
         }
     }
 
@@ -124,6 +167,7 @@ class ServiceActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        stopListenForServiceStart()
         Log.i(TAG,"Activity destroyed!")
     }
 
@@ -131,6 +175,7 @@ class ServiceActivity : AppCompatActivity() {
     private fun startService() {
         Log.i(TAG, "Starting player service")
         val intent = Intent(this, PlayerService::class.java)
+        listenForServiceStart()
         startForegroundService(intent)
     }
 
@@ -140,6 +185,7 @@ class ServiceActivity : AppCompatActivity() {
         enough()
         val intent = Intent(this, PlayerService::class.java)
         stopService(intent)
+        stopListenForServiceStart()
     }
 
     // Listen to the music
